@@ -302,15 +302,16 @@ with st.container():
 
         # Select Hair Color with Displayed Image
         with col2:
-            selected_color = st.selectbox("🌈 Hair Color", ["Black", "Blonde", "Brown", "Red"] + [os.path.splitext(hc)[0] for hc in hair_colors], index=0)
-            # If a hair color from the folder is selected, display the image
-            if selected_color in [os.path.splitext(hc)[0] for hc in hair_colors]:
-                color_image_path = os.path.join(color_images_folder, f"{selected_color}.png")
-                st.markdown(st_hover_color("#C4A484"), unsafe_allow_html=True)
-                image_html = f"""
-                {selected_color}
-                """
-                st.markdown(image_html, unsafe_allow_html=True)
+            selected_color = st.selectbox("🌈 Hair Color", ["Black", "Blonde", "Brown", "Red", "Purple", "Blue", "Green", "Pink", "Orange", "Gray"], index=0)
+            #                               + [os.path.splitext(hc)[0] for hc in hair_colors], index=0)
+            # # If a hair color from the folder is selected, display the image
+            # if selected_color in [os.path.splitext(hc)[0] for hc in hair_colors]:
+            #     color_image_path = os.path.join(color_images_folder, f"{selected_color}.png")
+            #     st.markdown(st_hover_color("#C4A484"), unsafe_allow_html=True)
+            #     image_html = f"""
+            #     {selected_color}
+            #     """
+            #     st.markdown(image_html, unsafe_allow_html=True)
 
         # Select Braid Type
         with col3:
@@ -492,46 +493,46 @@ with st.container():
 
 
     # Save to Designer Action (Save to DB when clicked)
-if st.button("➕ Save to Designer"):
-    # Get the last generated hairstyle's data
-    if st.session_state.generated_hairstyles:
-        last_design = st.session_state.generated_hairstyles[-1]
-        design_name = last_design[1]['design_name']  # Assuming 'design_name' is available
-        supabase_url = last_design[1]['supabase_url']  # Get the Supabase URL
-        selected_insights_for_save = last_design[1]['selected_insights']  # get the selected insights.
-        description = f"Generated a {braid_type} hairstyle in {selected_color}, length: {length}. Special: {custom_style}"
-        image_prompt = st.session_state.image_prompt  # Get the generated image prompt
+# if st.button("➕ Save to Designer"):
+#     # Get the last generated hairstyle's data
+#     if st.session_state.generated_hairstyles:
+#         last_design = st.session_state.generated_hairstyles[-1]
+#         design_name = last_design[1]['design_name']  # Assuming 'design_name' is available
+#         supabase_url = last_design[1]['supabase_url']  # Get the Supabase URL
+#         selected_insights_for_save = last_design[1]['selected_insights']  # get the selected insights.
+#         description = f"Generated a {braid_type} hairstyle in {selected_color}, length: {length}. Special: {custom_style}"
+#         image_prompt = st.session_state.image_prompt  # Get the generated image prompt
 
-        # Save to the brd_design table using the new save_to_mydesigns function
-        try:
-            save_successful = save_to_mydesigns(
-                design_name=design_name,
-                image_url=supabase_url,
-                description=description,
-                selected_insights=selected_insights_for_save,
-                image_prompt=image_prompt,
-            )
+#         # Save to the brd_design table using the new save_to_mydesigns function
+#         try:
+#             save_successful = save_to_mydesigns(
+#                 design_name=design_name,
+#                 image_url=supabase_url,
+#                 description=description,
+#                 selected_insights=selected_insights_for_save,
+#                 image_prompt=image_prompt,
+#             )
 
-            st.success("✅ Saved to My Designs (with image URL and details)!")
+#             st.success("✅ Saved to My Designs (with image URL and details)!")
 
-        except Exception as e:
-            st.error(f"❌ Failed to save to My Designs: {e}")
+#         except Exception as e:
+#             st.error(f"❌ Failed to save to My Designs: {e}")
 
 
-        # Save insights to brd_gtrends_designer_insights (separate action)
-        for insight_text in selected_insights_for_save:
-            # Check if the insight is already saved to prevent duplicates
-            if insight_text not in st.session_state.saved_insights:
-                # Save to Supabase
-                try:
-                    supabase.table("brd_gtrends_designer_insights").insert({"insight": insight_text}).execute()
-                    st.session_state.saved_insights.append(insight_text)  # update the session state
-                    st.success(f"✅ Insight '{insight_text}' added to Designer successfully!")
+#         # Save insights to brd_gtrends_designer_insights (separate action)
+#         for insight_text in selected_insights_for_save:
+#             # Check if the insight is already saved to prevent duplicates
+#             if insight_text not in st.session_state.saved_insights:
+#                 # Save to Supabase
+#                 try:
+#                     supabase.table("brd_gtrends_designer_insights").insert({"insight": insight_text}).execute()
+#                     st.session_state.saved_insights.append(insight_text)  # update the session state
+#                     st.success(f"✅ Insight '{insight_text}' added to Designer successfully!")
 
-                except Exception as e:
-                    st.error(f"Error saving insight to designer: {e}")
+#                 except Exception as e:
+#                     st.error(f"Error saving insight to designer: {e}")
             
-                st.info(f"Insight '{insight_text}' already saved.")  # Inform the user about duplicate.
+#                 st.info(f"Insight '{insight_text}' already saved.")  # Inform the user about duplicate.
 
-    else:
-        st.warning("No hairstyle has been generated yet.")
+#     else:
+#         st.warning("No hairstyle has been generated yet.")
