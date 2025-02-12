@@ -35,17 +35,17 @@ st.set_page_config(page_title="Competitor Analysis", page_icon="🏆", layout="w
 
 st.markdown("<h1 style='text-align: center;'>🏆 Competitor Analysis</h1>", unsafe_allow_html=True)
 
-# ✅ Function to Create Dataframe with Search Interest Bar + Sorting
+# ✅ Function to Create Dataframe with Quantity Bar + Sorting
 def create_df_with_bar(df, query_col, value_col):
     if df is None or df.empty:
         return pd.DataFrame()
 
     # Keep only necessary columns
     new_df = df[[query_col, value_col]].copy()
-    
+
     # Convert to numeric and fill missing values
     new_df[value_col] = pd.to_numeric(new_df[value_col], errors='coerce').fillna(0)
-    
+
     # **Sort in Descending Order**
     new_df = new_df.sort_values(by=value_col, ascending=False)
 
@@ -58,14 +58,14 @@ def create_df_with_bar(df, query_col, value_col):
         bar_len = int(round((clamped / max_for_bar) * scale_length))
         return '█' * bar_len
 
-    new_df["Search Interest"] = new_df.apply(lambda row: f"{row[value_col]} {get_bar(row[value_col])}", axis=1)
-    
+    new_df["Quantity"] = new_df.apply(lambda row: f"{row[value_col]} {get_bar(row[value_col])}", axis=1)
+
     # Rename columns
     new_df = new_df.rename(columns={query_col: "Keyword"})
-    
+
     # Keep only relevant columns
-    new_df = new_df[["Keyword", "Search Interest"]]
-    
+    new_df = new_df[["Keyword", "Quantity"]]
+
     return new_df
 
 # ✅ Main App
@@ -74,8 +74,8 @@ with st.container():
     outre_tab, sensationnel_tab, xpression_tab = st.tabs(["Outre", "Sensationnel", "X-pression"])
 
     with outre_tab:
-
-        outre_tabs = st.tabs(["Brand Summary", "Filters", "Key Insights", "Product Distribution", "Product Listings"])
+        #Outre tabs, combine all into one tab
+        outre_tabs = st.tabs(["Brand Summary", "Filters, Insights, Distribution", "Product Listings"])
 
         with outre_tabs[0]: # Brand Summary
             st.markdown("<h2 style='text-align: center;'>🔍 Outre Analysis</h2>", unsafe_allow_html=True)
@@ -124,17 +124,16 @@ with st.container():
             """)
 
             st.write("---")
-        
-        with outre_tabs[1]: # Filters
-            # ✅ Fetch Data
+
+        with outre_tabs[1]: # All other information in Outre
+            #Fetch Data
             df = fetch_outre_products()
             if df.empty:
                 st.error("⚠️ No data found in Supabase.")
                 st.stop()
 
-            # ✅ **Filters Section**
+            #Filters Section
             st.markdown("## 🎯 Filter Products")
-
             col_f1, col_f2 = st.columns([2, 2])
 
             with col_f1:
@@ -157,7 +156,7 @@ with st.container():
                 default=[]
             )
 
-            # **Apply Filters**
+            # Apply Filters
             filtered_df = df.copy()
             if selected_subcategories:
                 filtered_df = filtered_df[filtered_df["subcategory"].isin(selected_subcategories)]
@@ -168,15 +167,13 @@ with st.container():
                 filtered_df = filtered_df[filtered_df["name"].isin(search_name)]
 
             st.write("---")
-            
-        with outre_tabs[2]: # Key Insights
 
-            # ✅ **🔥 Key Competitor Insights**
+            #🔥 Key Competitor Insights
             st.markdown("### 🔥 Key Insights")
 
             col_m1, col_m2, col_m3, col_m4 = st.columns([3, 3, 3, 1])  # Add extra column for save button
 
-            # **📦 Total Products**
+            # 📦 Total Products
             total_products = len(df)
             col_m1.markdown(f"""
                 <div style="text-align: center; background-color: #f8f9fa; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
@@ -185,7 +182,7 @@ with st.container():
                 </div>
             """, unsafe_allow_html=True)
 
-            # **📌 Most Common Subcategory**
+            # 📌 Most Common Subcategory
             if not df.empty:
                 most_common_subcat = df["subcategory"].mode()[0]
                 col_m2.markdown(f"""
@@ -195,7 +192,7 @@ with st.container():
                     </div>
                 """, unsafe_allow_html=True)
 
-            # **📆 Latest Product Added**
+            # 📆 Latest Product Added
             if not df.empty:
                 latest_product_date = df["modified"].max()  # Use modified date for latest product
                 col_m3.markdown(f"""
@@ -216,12 +213,11 @@ with st.container():
                     save_to_designer(insight_key)
 
             st.write("---")
-        
-        with outre_tabs[3]: # Product Distribution
-            # ✅ **Charts Section**
+
+            #✅ **Charts Section**
             st.markdown("## 📊 Product Distribution")
 
-            # ✅ Function to Create Dataframe with Search Interest Bar + Sorting
+            # ✅ Function to Create Dataframe with Quantity Bar + Sorting
             def create_df_with_bar(df, query_col, value_col):
                 if df is None or df.empty:
                     return pd.DataFrame()
@@ -244,20 +240,20 @@ with st.container():
                     bar_len = int(round((clamped / max_for_bar) * scale_length))
                     return '█' * bar_len
 
-                new_df["Search Interest"] = new_df.apply(lambda row: f"{row[value_col]} {get_bar(row[value_col])}", axis=1)
+                new_df["Quantity"] = new_df.apply(lambda row: f"{row[value_col]} {get_bar(row[value_col])}", axis=1)
 
                 # Rename columns
                 new_df = new_df.rename(columns={query_col: "Keyword"})
 
                 # Keep only relevant columns
-                new_df = new_df[["Keyword", "Search Interest"]]
+                new_df = new_df[["Keyword", "Quantity"]]
 
                 return new_df
 
-            # **Row: Products by Subcategory & Products by Length**
+            #**Row: Products by Subcategory & Products by Length**
             col_chart1, col_chart2, col_chart3 = st.columns([4, 4, 1])  # Add extra column for save button
 
-            # **Products by Subcategory**
+            #**Products by Subcategory**
             with col_chart1:
                 st.subheader("📌 Products by Subcategory")
                 if not filtered_df.empty:
@@ -266,7 +262,7 @@ with st.container():
                     # Apply Bar Visualization
                     st.dataframe(create_df_with_bar(subcategory_df, "subcategory", "count"), hide_index=True, use_container_width=True)
 
-            # **Products by Length**
+            #**Products by Length**
             with col_chart2:
                 st.subheader("📏 Products by Length")
                 if not filtered_df.empty:
@@ -309,8 +305,9 @@ with st.container():
                         save_to_designer(ai_insight)  # Save to DB when clicked
 
             st.write("---")
-        with outre_tabs[4]:
-            # ✅ **Product Listings (Showing 5 at a time)**
+
+        with outre_tabs[2]: # Product Listings
+            #✅ **Product Listings (Showing 5 at a time)**
             st.markdown("## 🏷️ Product Listings")
 
             col_l1, col_l2 = st.columns([2.5, 0.5])
@@ -322,13 +319,13 @@ with st.container():
                 # Display the DataFrame with updated column names
                 st.dataframe(formatted_df[["Name", "Subcategory", "Quantity", "Length", "Link"]], use_container_width=True, hide_index=True, height=250)
 
-            # ✅ **Save Button Next to Product Listings**
+            #✅ **Save Button Next to Product Listings**
             with col_l2:
                 if st.button("➕", help="Add insight on Product Listings to Designer"):
                     insight = f"There are {len(filtered_df)} products available. The latest product was added on {filtered_df['modified'].max()}."
                     save_to_designer(insight)
 
-            # ✅ **AI Insight Below Product Listings**
+            #✅ **AI Insight Below Product Listings**
             if not filtered_df.empty:
                 ai_product_insight = f"""
                 - **Total Products:** {len(filtered_df)}
@@ -338,7 +335,7 @@ with st.container():
 
             st.write("---")
 
-            # ✅ Fetch products from Supabase
+            #✅ Fetch products from Supabase
 
             @st.cache_data
             def fetch_products():
@@ -346,10 +343,10 @@ with st.container():
                     response = supabase.table("brd_outre_products").select("*").execute()
                     df = pd.DataFrame(response.data) if response.data else pd.DataFrame()
 
-                    # ✅ Convert column names to lowercase to avoid KeyErrors
+                    #✅ Convert column names to lowercase to avoid KeyErrors
                     df.columns = df.columns.str.lower()
 
-                    # ✅ Extract filenames from image_url
+                    #✅ Extract filenames from image_url
                     df["image_filename"] = df["image_url"].apply(lambda x: os.path.basename(urlparse(x).path) if pd.notna(x) else None)
 
                     return df
@@ -357,7 +354,7 @@ with st.container():
                     st.error(f"Error fetching data: {e}")
                     return pd.DataFrame()
 
-            # ✅ Initialize Supabase client
+            #✅ Initialize Supabase client
             supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
             # **📁 Local Image Folder**
@@ -432,21 +429,24 @@ with st.container():
             end_idx = start_idx + PAGE_SIZE
             page_items = filtered_df.iloc[start_idx:end_idx]
 
-            # **🎨 Display products in a grid**
+            # Remove image related code
+
+            #**🎨 Display products in a grid**
             NUM_COLS = 4  # Set number of columns per row
             for i in range(0, len(page_items), NUM_COLS):
                 row_chunk = page_items.iloc[i : i + NUM_COLS]
                 cols = st.columns(len(row_chunk))
 
                 for col, (_, row) in zip(cols, row_chunk.iterrows()):
-                    image_path = get_local_image_path(row["image_filename"])  # ✅ Get local image path
-                    if image_path:
-                        col.image(image_path, use_container_width=True)  # ✅ Display local image
-                    else:
-                        col.warning("No Image Available")
+                    #image_path = get_local_image_path(row["image_filename"])  # ✅ Get local image path
+                    #if image_path:
+                    #    col.image(image_path, use_container_width=True)  # ✅ Display local image
+                    #else:
+                    #    col.warning("No Image Available")
 
                     col.caption(f"📌 {row['name']}")
                     col.markdown(f"[🔗 View Product]({row['link']})", unsafe_allow_html=True)  # ✅ Clickable link
+
 
             if not page_items.empty:
                 st.success(f"Displaying {len(page_items)} products.")
