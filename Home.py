@@ -3,7 +3,7 @@ from streamlit_lottie import st_lottie
 import json
 
 # ✅ Set page config FIRST
-st.set_page_config(page_title="NeuraWeave", page_icon="💠", layout="wide")
+st.set_page_config(page_title="Fintastic AI Design Studio", page_icon="💠", layout="wide")
 
 
 # Initialize session state variables
