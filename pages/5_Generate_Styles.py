@@ -199,8 +199,8 @@ def image_to_base64(image_path):
         return encoded_string
 
 # List hair color images
-color_images_folder = "ColorChartImages"
-hair_colors = [f for f in os.listdir(color_images_folder) if f.endswith((".png", ".jpg", ".jpeg"))]
+#color_images_folder = "ColorChartImages"
+#hair_colors = [f for f in os.listdir(color_images_folder) if f.endswith((".png", ".jpg", ".jpeg"))]
 
 # Add image display on hover to avoid cluttering the UI.
 def st_hover_color(hex_color):
