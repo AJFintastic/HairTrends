@@ -13,7 +13,7 @@ st.set_page_config(page_title="Generate Hairstyles", page_icon="🎨", layout="w
 
 # Configure the Gemini API key (ensure GEMINI_API_KEY exists in your .env file)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 # Supabase settings (replace with your actual credentials)
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
